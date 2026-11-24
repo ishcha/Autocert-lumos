@@ -253,4 +253,6 @@ example.lumos, cli.py
 
 ## License
 
-[CC BY-NC-SA 4.0](LICENSE): you may use, share and adapt this work for non-commercial purposes, with attribution, and adaptations must be shared under the same license. For commercial use, contact the authors.
+Copyright (c) 2025-2026 the Lumos authors (Isha Chaudhary, Vedaant Jain, Prineet Parhar, Kavya Sachdeva, Avaljot Singh, Sayan Ranu, Gagandeep Singh).
+
+Licensed under [CC BY-NC-SA 4.0](LICENSE): you may use, share and adapt this work for non-commercial purposes, with attribution, and adaptations must be shared under the same license. For commercial use, contact the authors.
