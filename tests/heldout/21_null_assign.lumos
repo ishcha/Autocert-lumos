@@ -1,0 +1,20 @@
+# Retrieval QA where the looked-up relation may be missing. The null edge can be
+# stored in a variable, reading .L[0] from it gives null again, and comparisons
+# with it are false, even e = e. Passing null to a function is undefined.
+aspirin := Node(L{"aspirin"})
+flu := Node(L{"flu"})
+gout := Node(L{"gout"})
+ulcer := Node(L{"ulcer"})
+e1 := Edge(aspirin, flu, L{"treats"})
+e2 := Edge(ulcer, aspirin, L{"worsens"})
+G := Graph({aspirin, flu, gout, ulcer}, {e1, e2})
+
+estimateProb 0.05 900 "Clopper-Pearson" :
+    c := sample(meas({flu, gout, ulcer}))
+    e := getEdge(aspirin, c, G)
+    rel := e.L[0]
+    if e = e then known := "known" else known := "unknown"
+    if rel = "treats" then gt := "yes" else gt := "no"
+    r := L("Does aspirin treat " + c.L[0] + "? (" + known + ")")
+    logged := Log(rel)
+toEstimate(J_QA(r, gt) = 1)

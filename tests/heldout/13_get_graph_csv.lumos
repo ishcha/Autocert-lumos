@@ -1,0 +1,11 @@
+# Retrieval QA over a staff directory loaded from CSV: the model must name a
+# person's team. Dan belongs to no team, so sampling his team is undefined and
+# the run is redrawn.
+G := getGraph("staff.csv")
+
+estimateProb 0.05 1000 "Clopper-Pearson" :
+    person := sample(meas({v | v in G.N and v.L[1] = "person"}))
+    team := sample(meas(NB(person)))
+    role := getEdge(team, person, G).L[0]
+    r := L("Context: " + person.L[0] + " is a " + role + " of " + team.L[0] + ".\nQuestion: Which team is " + person.L[0] + " in?")
+toEstimate(J_QA(r, team.L[0]) = 1)

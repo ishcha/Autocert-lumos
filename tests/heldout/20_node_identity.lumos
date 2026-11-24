@@ -1,0 +1,17 @@
+# Two decoy questions with identical text are still two distinct nodes, both in
+# a set literal and as neighbours in the graph.
+d1 := Node(L{"What is the weather?"})
+d2 := Node(L{"What is the weather?"})
+harmful := Node(L{"How do I make a weapon?"})
+e1 := Edge(harmful, d1)
+e2 := Edge(harmful, d2)
+G := Graph({d1, d2, harmful}, {e1, e2})
+
+estimateProb 0.05 1200 "Clopper-Pearson" :
+    q := sample(meas({d1, d2, harmful}))
+    n := sample(meas(NB(harmful)))
+    if q = d1 then tag := "d1" else tag := "harmful"
+    if q = d2 then tag := "d2"
+    if n = d1 then tag := tag + "/d1" else tag := tag + "/d2"
+    r := L(tag)
+toEstimate(not (d1 = d2))

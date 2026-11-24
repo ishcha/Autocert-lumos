@@ -1,0 +1,13 @@
+src_id,src_type,src_name,src_context,dst_id,dst_type,dst_name,dst_context,relation
+d1,drug,Aspirin,CTX-d1,x1,disease,Flu,CTX-x1,treat
+d1,drug,Aspirin,CTX-d1,x2,disease,Gout,CTX-x2,contraindicate
+d2,drug,Ibuprofen,CTX-d2,x1,disease,Flu,CTX-x1,treat
+d2,drug,Ibuprofen,CTX-d2,x2,disease,Gout,CTX-x2,contraindicate
+d3,drug,Codeine,CTX-d3,x1,disease,Flu,CTX-x1,treat
+d3,drug,Codeine,CTX-d3,x3,disease,Asthma,CTX-x3,contraindicate
+d4,drug,Statin,CTX-d4,x2,disease,Gout,CTX-x2,treat
+d5,drug,Warfarin,CTX-d5,x1,disease,Flu,CTX-x1,contraindicate
+d6,drug,Albuterol,CTX-d6,x3,disease,Asthma,CTX-x3,treat
+d6,drug,Albuterol,CTX-d6,x1,disease,Flu,CTX-x1,contraindicate
+d7,drug,Placebo,CTX-d7,,,,,
+x2,disease,Gout,CTX-x2,x3,disease,Asthma,CTX-x3,comorbid

@@ -1,0 +1,12 @@
+# A lookup tool receives Lumos values as documented: Python strings, numbers and
+# booleans, an OrderedSet for a set, and nodes and edges with .attributes.
+u := Node(L{"Alice", "admin"})
+w := Node(L{"Bob", "guest"})
+e := Edge(u, w, L{"manages"})
+G := Graph({u, w}, {e})
+
+estimateProb 0.05 200 "Clopper-Pearson" :
+    who := sample(meas({u, w}))
+    k := sample(meas({1, 2, 3}))
+    ok := Tool("lookup", k, 0.5, (k = 2), {"b", "a", "c"}, who, getEdge(w, u, G))
+toEstimate(ok = 1)

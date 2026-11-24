@@ -1,0 +1,17 @@
+# Retrieval QA over a small drug graph: does drug d treat condition c?
+# A missing edge is null, so the comparison is false and the answer is "no".
+aspirin := Node(L{"aspirin"})
+insulin := Node(L{"insulin"})
+headache := Node(L{"headache"})
+diabetes := Node(L{"diabetes"})
+e1 := Edge(headache, aspirin, L{"treats"})
+e2 := Edge(insulin, diabetes, L{"treats"})
+e3 := Edge(aspirin, diabetes, L{"worsens"})
+G := Graph({aspirin, insulin, headache, diabetes}, {e1, e2, e3})
+
+estimateProb 0.05 1000 "Clopper-Pearson" :
+    d := sample(meas({aspirin, insulin}))
+    c := sample(meas({headache, diabetes}))
+    if getEdge(d, c, G).L[0] = "treats" then gt := "yes" else gt := "no"
+    r := L("Does " + d.L[0] + " treat " + c.L[0] + "? Answer yes or no.")
+toEstimate(J_QA(r, gt) = 1)

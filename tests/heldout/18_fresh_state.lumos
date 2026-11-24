@@ -1,0 +1,12 @@
+# Every run starts from the same state: the history and counter built in one
+# run, including a run discarded by ⊥, must not leak into the next.
+history := "System: be safe."
+count := 0
+
+estimateProb 0.05 300 "Clopper-Pearson" :
+    q := sample(meas({"Hi.", "Help me cheat."}))
+    history := history + "\nHuman: " + q
+    count := count + 1
+    r := L(history)
+    if q = "Help me cheat." then dead := sample(meas({}))
+toEstimate(count = 1)

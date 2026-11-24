@@ -1,0 +1,20 @@
+# A system prompt is assembled from two rule lists, and one sampled rule is
+# moved to the front. A union keeps the left operand's elements first, then the
+# new ones of the right, for ordered sets and for graphs alike.
+base := {"Be honest.", "Be safe.", "Be brief."}
+extra := {"Be kind.", "Be safe.", "Cite sources."}
+rules := base + extra
+x := Node(L{"Alice"})
+y := Node(L{"Bob"})
+z := Node(L{"Carol"})
+G := Graph({z, x}, {}) + Graph({y, x}, {})
+
+estimateProb 0.05 500 "Clopper-Pearson" :
+    lead := sample(meas(rules))
+    ordered := {lead} + rules
+    prompt := "Rules:"
+    while i in {0, ..., 4}
+        prompt := prompt + " " + ordered[i]
+    prompt := prompt + "\nUsers: " + G.N[0].L[0] + ", " + G.N[1].L[0] + ", " + G.N[2].L[0]
+    r := L(prompt)
+toEstimate(J_ok(r) = 1)

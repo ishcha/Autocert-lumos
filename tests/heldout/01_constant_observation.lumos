@@ -1,0 +1,4 @@
+# The smallest certificate: an observation that holds in every run.
+estimateProb 0.05 100 "Clopper-Pearson" :
+    x := 1 + 2
+toEstimate(x = 3)

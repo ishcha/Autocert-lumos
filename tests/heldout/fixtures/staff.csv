@@ -1,0 +1,6 @@
+src_id,src_name,src_kind,dst_id,dst_name,dst_kind,relation
+p1,Alice,person,t1,Security,team,member
+p1,Alice,person,t2,Payroll,team,member
+p2,Bob,person,t1,Security,team,lead
+t2,Payroll,team,p3,Carol,person,member
+p4,Dan,person,,,,

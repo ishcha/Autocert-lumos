@@ -1,0 +1,5 @@
+# The attacker picks one of five token budgets, uniformly (the default meas).
+# The certificate tracks how often the budget is small.
+estimateProb 0.05 1000 "Clopper-Pearson" :
+    budget := sample(meas({10, 20, 30, 40, 50}))
+toEstimate(budget < 25)

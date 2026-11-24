@@ -1,0 +1,20 @@
+# Offline example: runs without a target LMS (python cli.py example.lumos).
+# A random two-step walk on a small undirected graph, and the probability
+# that it ends somewhere other than where it started.
+v_cat := Node(L{"cat", "a small domesticated feline"})
+v_dog := Node(L{"dog", "a domesticated canine"})
+v_fox := Node(L{"fox", "a wild canine"})
+v_owl := Node(L{"owl", "a nocturnal bird"})
+e1 := Edge(v_cat, v_dog, L{"pet"})
+e2 := Edge(v_dog, v_fox, L{"canine"})
+e3 := Edge(v_fox, v_owl, L{"wild"})
+e4 := Edge(v_cat, v_owl, L{"hunter"})
+G := Graph({v_cat, v_dog, v_fox, v_owl}, {e1, e2, e3, e4})
+
+estimateProb 0.05 1000 "Clopper-Pearson" :
+    start := sample(meas(G.N))
+    middle := sample(meas(NB(start)))
+    finish := sample(meas(NB(middle)))
+    # format fills {start} and {finish} with an attribute of each node
+    prompt := format("Compare {start} with {finish}.", start + finish)
+toEstimate(not (finish = start))

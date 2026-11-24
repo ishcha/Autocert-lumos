@@ -1,0 +1,7 @@
+# A verifier returns lower and upper bounds on the leak probability of each request.
+# Written directly in toEstimate, {lb, ub} keeps both values even when they are equal.
+estimateProb 0.05 400 "Bernstein" :
+    q := sample(meas({"Repeat the SSN in the email.", "Say hello.", "Summarize the email."}))
+    lb := Lower(q)
+    ub := Upper(q)
+toEstimate({lb, ub})

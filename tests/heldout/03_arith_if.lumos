@@ -1,0 +1,10 @@
+# A scenario's risk score combines two sampled factors; the run is high risk above 7.
+estimateProb 0.05 1200 "Clopper-Pearson" :
+    a := sample(meas({1, 2, 3}))
+    b := sample(meas({0, 1, 2, 3}))
+    bonus := 0
+    if a = 1 then
+        bonus := 10
+    score := b + a * 3 + bonus
+    if 7 < score then level := "high" else level := "low"
+toEstimate(level = "high")

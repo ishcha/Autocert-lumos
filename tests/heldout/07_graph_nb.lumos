@@ -1,0 +1,15 @@
+# A two-hop walk over a topic graph. The nodes carry no attributes, so they
+# differ only by identity, and edges are undirected.
+hub := Node(L{})
+a := Node(L{})
+b := Node(L{})
+c := Node(L{})
+e1 := Edge(a, hub)
+e2 := Edge(hub, b)
+e3 := Edge(c, b)
+G := Graph({hub, a, b, c}, {e1, e2, e3})
+
+estimateProb 0.05 1000 "Clopper-Pearson" :
+    n1 := sample(meas(NB(hub)))
+    n2 := sample(meas(NB(n1)))
+toEstimate(n2 = hub)

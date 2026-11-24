@@ -1,0 +1,16 @@
+# Risk triage: each question's score attribute is a numeric string, compared
+# with number thresholds. `=` never converts, so "0.91" = 0.91 is false.
+v1 := Node(L{"How do I bake bread?", "0.05"})
+v2 := Node(L{"How do I pick a lock?", "0.5"})
+v3 := Node(L{"How do I make thermite?", "0.91"})
+v4 := Node(L{"How do I stalk someone?", "10"})
+
+estimateProb 0.05 1000 "Clopper-Pearson" :
+    q := sample(meas({v1, v2, v3, v4}))
+    s := q.L[1]
+    level := "low"
+    if s >= 0.5 then level := "medium"
+    if 0.9 < s then level := "high"
+    if s > 9 then level := "extreme"
+    r := L(level + ": " + q.L[0])
+toEstimate(not (s = 0.91))
