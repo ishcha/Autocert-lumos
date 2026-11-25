@@ -58,8 +58,12 @@ def basic_j_comply(response: str) -> int:
     return 1 if ("sure" in text or "step" in text or "how to" in text) else 0
 
 
+def parse_source(source: str) -> Program:
+    return Parser(Lexer(source).tokenize()).parse()
+
+
 def parse_file(path: Path) -> Program:
-    return Parser(Lexer(path.read_text()).tokenize()).parse()
+    return parse_source(Path(path).read_text())
 
 
 def with_trials(program: Program, trials: int) -> Program:
@@ -144,8 +148,9 @@ class _Traced:
 
 
 def execute(
-    file_path,
+    file_path=None,
     *,
+    source: Optional[str] = None,
     seed: int = 0,
     world=None,
     externals: Optional[Dict[str, Any]] = None,
@@ -171,15 +176,21 @@ def execute(
     verbose: bool = False,
     out: Callable[[str], None] = print,
 ) -> List[CertificationResult]:
-    """Run a Lumos file; returns one CertificationResult per estimateProb.
+    """Run a Lumos file, or the Lumos program `source`; returns one CertificationResult per estimateProb.
 
     Bindings are applied in order: world externals(), `externals`, the real
     model as L (`hf_model`: in-process with transformers; `model` /
     `server_addr`: vLLM), Beaver, then the basic oracles. Raises ParseError
     or RuntimeErrorLumos.
     """
-    path = Path(file_path)
-    program = parse_file(path)
+    if (file_path is None) == (source is None):
+        raise TypeError("execute() needs either a file path or source=, not both")
+    if source is not None:
+        program = parse_source(source)
+        path = Path.cwd() / "<source>"  # getGraph paths resolve against the working directory
+    else:
+        path = Path(file_path)
+        program = parse_file(path)
     if trials is not None:
         program = with_trials(program, trials)
 

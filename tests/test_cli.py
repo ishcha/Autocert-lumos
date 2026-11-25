@@ -41,6 +41,18 @@ class RunnerTests(unittest.TestCase):
         (result,) = execute(self.spec, trials=25, externals={"J": lambda x: 1})
         self.assertEqual(result.trials, 25)
 
+    def test_source_runs_like_the_same_file(self):
+        externals = {"J": lambda x: 1}
+        (from_file,) = execute(self.spec, trials=25, externals=externals)
+        (from_source,) = execute(source=PROGRAM, trials=25, externals=externals)
+        self.assertEqual(from_source, from_file)
+
+    def test_source_and_file_path_are_exclusive(self):
+        with self.assertRaises(TypeError):
+            execute(self.spec, source=PROGRAM)
+        with self.assertRaises(TypeError):
+            execute()
+
     def test_world_bindings_and_base_dir(self):
         write(self.dir, "kg.csv", "src_id,dst_id,rel\na,b,r\n")
         write(self.dir, "graph.lumos", 'G := getGraph("kg.csv")\nestimateProb 0.05 5 "CP":\n'

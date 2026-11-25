@@ -27,6 +27,8 @@ def J_safe(reply):                    # your judge: any Python function returnin
 print(result)
 ```
 
+To run a program held in a string instead of a file, pass it as `execute(source=spec_text, ...)`; `getGraph` paths then resolve against the working directory.
+
 `execute` returns one result per `estimateProb` in the program. Each result has the interval (`lower_ci`, `upper_ci`), the observations, the seeds of every run, and the number of runs discarded as undefined.
 
 `LocalModel` runs the model in-process with transformers. It applies the model's chat template, answers without thinking for models that think first (such as Qwen3 and Qwen3.5) unless `thinking=True`, and takes `max_new_tokens`, `temperature`, `top_p`, `top_k`, `system_message` and `device`.
@@ -63,8 +65,8 @@ The paper's specs are in `nl2lumos/spec_progs_claude/`:
 | `cat_risk_adaptive` | safety when the next question adapts to whether the model complied | `L`, `J_safe`, `J_comply` | `--with-basic-oracles` or your judges |
 | `counterfactual_bias` | equal treatment of a male and a female prompt under random jailbreak prefixes | `L`, `J_bias`, `M`, `meas` | `--world worlds/counterfactual_bias.py` (placeholder `M` and `J_bias`) |
 | `prime` | medical question answering over the PrimeKG knowledge graph | `L`, `J_QA`, the PrimeKG graph | `--world worlds/prime_primekg.py`, after converting PrimeKG ([below](#primekg-data)) |
-| `vlm_braking_rain` | a vision model's braking decision in simulated rain | a vision model `L`, the `Scenic` tool, `J_VLM_QA` | needs a VLM and Scenic |
-| `beaver` | bounds on leaking private data, from the Beaver verifier | `Beaver`, `M`, `P`, `meas` | `--world worlds/beaver_enron.py --with-beaver` with a vLLM server (integration in progress) |
+| `vlm_braking_rain` | a vision model's braking decision in simulated rain | a vision model `L`, the `Scenic` tool, `J_VLM_QA` | needs a VLM and Scenic (not connected in this version) |
+| `beaver` | bounds on leaking private data, from the Beaver verifier | `Beaver`, `M`, `P`, `meas` | `--world worlds/beaver_enron.py --with-beaver` with a vLLM server (not connected in this version) |
 
 ### PrimeKG data
 
@@ -174,7 +176,7 @@ The interpreter follows the paper's grammar (§4) and semantics (§5, Appendix A
 lumos/      the interpreter: lexer.py, parser.py, ast.py, interpreter.py, certify.py (certifiers),
             values.py, graph.py, measures.py, env.py, errors.py, cli.py,
             local_model.py (HuggingFace in-process), llm.py (vLLM), beaver_bridge.py, testing.py
-demo/       catastrophic_risk.ipynb
+demo/       tutorial.ipynb (write a spec step by step), helpers.py (run and check a spec, draw its graph, the Qwen3Guard judge)
 worlds/     externals for running the specs (inputs, placeholder judges, data locations)
 nl2lumos/   natural-language specs, the generator prompt, generated Lumos and Python programs
 scripts/    primekg_to_lumos.py

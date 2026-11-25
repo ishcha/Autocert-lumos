@@ -2,7 +2,7 @@
 
 **Certify how a language-model system behaves, with statistical guarantees.**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ishcha/Autocert-lumos/blob/main/demo/catastrophic_risk.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ishcha/Autocert-lumos/blob/main/demo/tutorial.ipynb)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE)
 [![Paper](https://img.shields.io/badge/arXiv-2512.02966-b31b1b.svg)](https://arxiv.org/abs/2512.02966)
 
@@ -90,16 +90,21 @@ lumos nl2lumos/spec_progs_claude/cat_risk_random_walk.lumos \
 
 `--with-basic-oracles` supplies a keyword-based placeholder judge for quick checks. Certify with a judge you trust.
 
-## Demo
+The Python API also runs a spec given as text: `execute(source=spec_text, ...)`.
 
-[`demo/catastrophic_risk.ipynb`](demo/catastrophic_risk.ipynb) certifies **Qwen3.5-4B** on the paper's two multi-turn safety specs, with **Qwen3Guard** as the judge. Open it in Colab with a GPU runtime using the badge at the top.
+## Tutorial
 
-| spec | attacker | safe runs | 95% interval |
-|---|---|---|---|
-| random walk | each next question is a random related one | 20 / 20 | [0.83, 1.00] |
-| adaptive | the next question is more harmful if the model complied, less if it refused | 20 / 20 | [0.83, 1.00] |
+[`demo/tutorial.ipynb`](demo/tutorial.ipynb) teaches you to write a specification by building the paper's catastrophic-risk spec yourself, one part at a time:
 
-These results come from an A100 server, where each spec took about 7 minutes. The notebook hasn't been run on Colab yet.
+1. a graph of harmful questions, linked when they are related;
+2. a first spec that samples from it;
+3. one turn: ask the model and judge the reply;
+4. a 3-turn conversation that walks through related questions;
+5. an attacker that adapts to whether the model complied;
+6. the guarantee: confidence, number of runs and certifier;
+7. your spec on a real model (Qwen3.5-4B).
+
+Each part has an exercise with a solution. Parts 1 to 6 use a pretend model and run on a CPU, and every exercise has an exact answer that your spec's interval should contain. Open it in Colab with the badge at the top; part 7 needs a GPU runtime.
 
 ## Specifications in this repo
 
@@ -111,8 +116,8 @@ The paper's specifications are in [`nl2lumos/spec_progs_claude/`](nl2lumos/spec_
 | `cat_risk_adaptive` | the same, against an attacker that adapts to whether the model complied |
 | `counterfactual_bias` | equal treatment of male and female prompts under random jailbreak prefixes |
 | `prime` | medical question answering over the PrimeKG knowledge graph |
-| `vlm_braking_rain` | a vision model's braking decision in a simulated rainy scene |
-| `beaver` | bounds on leaking private data, computed by the Beaver verifier |
+| `vlm_braking_rain` | a vision model's braking decision in a simulated rainy scene (needs a scene simulator, not included) |
+| `beaver` | bounds on leaking private data, computed by the Beaver verifier (not included) |
 
 What each spec needs to run is in the [reference](docs/reference.md#the-specs-in-this-repo).
 
@@ -133,9 +138,7 @@ What each spec needs to run is in the [reference](docs/reference.md#the-specs-in
   - every spec in the repo run against a mock world with an exactly computed expected answer;
   - 23 held-out specs written without reading the interpreter;
   - `prime` on the full PrimeKG graph.
-- **In progress:**
-  - **Beaver:** the bridge exists but hasn't been run end to end.
-  - **`vlm_braking_rain`:** needs a vision model and the Scenic simulator.
+- **Not in this version:** the connections to the Beaver verifier and the Scenic simulator, which `beaver` and `vlm_braking_rain` need.
 
 ## Citation
 
