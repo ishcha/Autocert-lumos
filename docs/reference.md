@@ -51,8 +51,8 @@ lumos nl2lumos/spec_progs_claude/cat_risk_random_walk.lumos \
 | `--world FILE.py` | bind externals from `externals()` in that file; its `BASE_DIR` sets where `getGraph` looks |
 | `--trials N` | override `n` in every `estimateProb` (quick runs) |
 | `--trace K` | print every external call of the first `K` runs, and how each run ended |
-| `--with-basic-oracles` | keyword-based `J_safe` / `J_comply` (refusal detection), for quick checks |
-| `--gen-length`, `--temperature`, `--top-p`, `--system-message` | generation settings for `L` |
+| `--with-basic-oracles` | rule-based `J_safe` / `J_comply` from `lumos/rule_judges.py`, for quick checks: `J_safe` is 1 only for a clean refusal (refuses, gives no help), and `J_comply` is its complement |
+| `--gen-length`, `--temperature`, `--top-p`, `--top-k`, `--system-message` | generation settings for `L` (with `--model`, models that think first, such as Qwen3.5, answer without thinking) |
 | `--seed`, `--data-dir`, `-v` | interpreter seed, directory for `getGraph` paths, verbose |
 
 ### The specs in this repo
@@ -63,6 +63,7 @@ The paper's specs are in `nl2lumos/spec_progs_claude/`:
 |---|---|---|---|
 | `cat_risk_random_walk` | safety over a random 3-turn harmful conversation | `L`, `J_safe` | `--with-basic-oracles` or your judges |
 | `cat_risk_adaptive` | safety when the next question adapts to whether the model complied | `L`, `J_safe`, `J_comply` | `--with-basic-oracles` or your judges |
+| `cat_risk_fiction` (in `demo/`) | the random walk told as a story: a sampled fiction frame wraps the questions | `L`, `J_safe` | `--with-basic-oracles` or your judges |
 | `counterfactual_bias` | equal treatment of a male and a female prompt under random jailbreak prefixes | `L`, `J_bias`, `M`, `meas` | `--world worlds/counterfactual_bias.py` (placeholder `M` and `J_bias`) |
 | `prime` | medical question answering over the PrimeKG knowledge graph | `L`, `J_QA`, the PrimeKG graph | `--world worlds/prime_primekg.py`, after converting PrimeKG ([below](#primekg-data)) |
 | `vlm_braking_rain` | a vision model's braking decision in simulated rain | a vision model `L`, the `Scenic` tool, `J_VLM_QA` | needs a VLM and Scenic (not connected in this version) |
@@ -175,8 +176,8 @@ The interpreter follows the paper's grammar (§4) and semantics (§5, Appendix A
 ```
 lumos/      the interpreter: lexer.py, parser.py, ast.py, interpreter.py, certify.py (certifiers),
             values.py, graph.py, measures.py, env.py, errors.py, cli.py,
-            local_model.py (HuggingFace in-process), llm.py (vLLM), beaver_bridge.py, testing.py
-demo/       tutorial.ipynb (write a spec step by step), helpers.py (run and check a spec, draw its graph, the Qwen3Guard judge)
+            local_model.py (HuggingFace in-process), llm.py (vLLM), rule_judges.py, beaver_bridge.py, testing.py
+demo/       tutorial.ipynb (write a spec step by step), cat_risk_fiction.lumos, helpers.py (run and check a spec, draw its graph, the Qwen3Guard judge)
 worlds/     externals for running the specs (inputs, placeholder judges, data locations)
 nl2lumos/   natural-language specs, the generator prompt, generated Lumos and Python programs
 scripts/    primekg_to_lumos.py

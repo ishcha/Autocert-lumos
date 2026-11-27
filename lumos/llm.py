@@ -11,6 +11,8 @@ import httpx
 import requests
 from openai import OpenAI
 
+from .local_model import strip_thinking
+
 
 _DEFAULT_VLLM_FLAGS = {
     "max_logprobs": -1,
@@ -53,11 +55,13 @@ class LLMProvider:
         gen_length=256,
         temperature=1.0,
         top_p=0.99,
+        top_k=None,
         use_chat_template=True,
         system_message=None,
         gpu_devices=None,
         api_key=None,
         vllm_flags=None,
+        thinking=False,
     ):
         self.model = model
         self.server_addr = server_addr
@@ -65,9 +69,12 @@ class LLMProvider:
         self.gen_length = gen_length
         self.temperature = temperature
         self.top_p = top_p
+        self.top_k = top_k
         self.use_chat_template = use_chat_template
         self.system_message = system_message
         self.gpu_devices = gpu_devices
+        # Models that think first (Qwen3, Qwen3.5) answer directly unless thinking=True, as in LocalModel.
+        self.thinking = thinking
         # Overrides of _DEFAULT_VLLM_FLAGS, e.g. {"gpu_memory_utilization": 0.3}.
         self.vllm_flags = {**_DEFAULT_VLLM_FLAGS, **(vllm_flags or {})}
         # Priority: explicit arg, LUMOS_API_KEY, OPENAI_API_KEY.
@@ -306,8 +313,9 @@ class LLMProvider:
                 max_tokens=self.gen_length,
                 temperature=self.temperature,
                 top_p=self.top_p,
+                extra_body=self._extra_body(chat=True),
             )
-            return self._extract_chat_message_text(response)
+            return strip_thinking(self._extract_chat_message_text(response))
 
         response = self._client.completions.create(
             model=self._model_name,
@@ -315,8 +323,19 @@ class LLMProvider:
             max_tokens=self.gen_length,
             temperature=self.temperature,
             top_p=self.top_p,
+            extra_body=self._extra_body(chat=False),
         )
         return str(getattr(response.choices[0], "text", "") or "")
+
+    def _extra_body(self, chat):
+        """vLLM's extensions to the OpenAI request: top_k, and the thinking switch for chat templates."""
+        body = {}
+        if self.top_k is not None:
+            body["top_k"] = self.top_k
+        if chat:
+            # read by Qwen3-style chat templates and ignored by others
+            body["chat_template_kwargs"] = {"enable_thinking": self.thinking}
+        return body
 
     def __call__(self, prompt):
         for attempt in range(3):
